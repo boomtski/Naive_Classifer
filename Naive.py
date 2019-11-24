@@ -70,8 +70,11 @@ def run_main():
     # print(test_doc)
     # print(test_label)
 
-    score_1, score_2 = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg)
-    print('scores: ' + str(score_1) + ', and ' + str(score_2))
+    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg)
+    print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
+
+    guess = classify_nb(test_doc, score_pos, score_neg)
+    print('guess: ' + guess)
 
 
 """
@@ -231,6 +234,8 @@ def train_nb(documents, labels):
 """
 don't think 'label' is needed for this function??? But it's written on the project description
 """
+
+
 def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg):
     print('\nnow scoring document: \n')
 
@@ -252,8 +257,18 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
     return score_pos, score_neg
 
 
-def classify_nb(document, a):
-    return "aaa"
+"""
+did't have to use the 'document' parameter here... am I doing something wrong???
+"""
+
+
+def classify_nb(document, score_pos, score_neg):
+    if score_pos > score_neg:
+        guess = 'positive review! :)'
+    else:
+        guess = 'negative review! :('
+
+    return guess
 
 
 run_main()
