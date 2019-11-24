@@ -41,7 +41,7 @@ def run_main():
     The code shown below works better for all_labels
     """
     freqs3 = Counter(all_labels)    
-    print('number of each label: ', end='')
+    print('total number of each label (100% of data): ', end='')
     print(freqs3)
     
     
@@ -53,6 +53,25 @@ def run_main():
         freqs2.update(doc)
 
     dict_pos, dict_neg, log_prob_pos, log_prob_neg = train_nb(train_docs, train_labels)
+
+    """
+    Task 2
+    uncomment each test file for use as needed
+    """
+    # test_file_1 = current_dir + "\\test_file_1.txt"
+    # test_doc, test_label = read_documents(test_file_1)
+    #
+    # test_file_2 = current_dir + "\\test_file_2.txt"
+    # test_doc, test_label = read_documents(test_file_2)
+    #
+    test_file_3 = current_dir + "\\test_file_3.txt"
+    test_doc, test_label = read_documents(test_file_3)
+
+    # print(test_doc)
+    # print(test_label)
+
+    score_1, score_2 = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg)
+    print('scores: ' + str(score_1) + ', and ' + str(score_2))
 
 
 """
@@ -209,13 +228,28 @@ def train_nb(documents, labels):
     return dict_pos, dict_neg, log_prob_pos, log_prob_neg
 
 
+"""
+don't think 'label' is needed for this function??? But it's written on the project description
+"""
 def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg):
-    print('now scoring document:')
+    print('\nnow scoring document: \n')
 
+    score_pos = log_prob_pos
+    score_neg = log_prob_neg
 
+    print('printing document:')
+    print(document)
 
-    score = 0
-    return score
+    # match each word in the document with the probability of its occurrence from the training data
+    for word in document[0]:
+        if word in dict_pos:
+            score_pos += dict_pos.get(word)
+
+    for word in document[0]:
+        if word in dict_neg:
+            score_neg += dict_neg.get(word)
+
+    return score_pos, score_neg
 
 
 def classify_nb(document, a):
