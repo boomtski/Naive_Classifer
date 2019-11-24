@@ -6,6 +6,7 @@ Created on Sat Nov 23 14:48:31 2019
 """
 import os
 from collections import Counter
+import math
 
 def run_main():
     print("Naive-Bayes Classifier")
@@ -48,7 +49,7 @@ def run_main():
         freqs2.update(doc)
     
     
-    words_in_vocabulary, words_in_pos, words_in_neg, total_vocabulary = train_nb(train_docs, train_labels)
+    dict_pos, dict_neg, log_prob_pos, log_prob_neg = train_nb(train_docs, train_labels)
     
 """
 Reading the document.
@@ -69,8 +70,6 @@ def train_nb(documents, labels):
     words_in_vocabulary = Counter()
     words_in_pos = []                   
     words_in_neg = []                  
-    total_vocabulary = 0
-    
     
     """
     This will track all vocabulary in the training set.
@@ -87,42 +86,112 @@ def train_nb(documents, labels):
     for i in range(len(documents)):
         if(labels[i] == "neg"):
             words_in_neg.append(documents[i])
-    
+            
     """
     Positive review vocabulary and their frequency
     """ 
     word_pos = Counter()
     for doc in words_in_pos:
-        word_pos.update(doc)
-    #print (word_pos)
-    
+        word_pos.update(doc)   
     """
     Negative review vocabulary and their frequency
     """
     word_neg = Counter()
     for doc in words_in_neg:
         word_neg.update(doc)
+        
+        
+        
+        
+    """
+    Adding words that do not appear in Positive
+    """
+    dict_pos = word_pos
+        
+    for word in word_neg:
+        if word not in word_pos:
+            dict_pos[word] = 0
+    #print(dict_pos)
+    
+    for word in dict_pos:
+        value = dict_pos.get(word)
+        value += 0.5
+        dict_pos[word] = value
+    #print(dict_pos)
+        
+        
     
     """
-    Was thinking of adding smoothing directly, but I realised that for the 
-    smoothing to work, it needs to be when the user enters a sentence with a
-    word that does not exist in either "POS" or "NEG" set. That woule be the moment
-    to add a 0.5 smoothing IF the word appears in the words_in_vocabulary.
+    Adding words that do not appear in Negative
+    """
+    dict_neg = word_neg
+      
+    for word in word_pos:
+        if word not in word_neg:
+            dict_neg[word] = 0
+    #print(dict_neg)
     
-    I think this would be better to implemented in the Part 2 because of how the
-    Score formula is used.
+    for word in dict_neg:
+        value = dict_neg.get(word)
+        value += 0.5
+        dict_neg[word] = value
+    #print(dict_neg)
+    
     
     """
-#    for key in word_pos:
-#        value = word_pos.get(key)
-#        value += 0.5
-#        word_pos[key] = value
-#    print(word_pos)   
-    #print(positive_review)
+    Calculating the log probabilities of each word
+    """
     
-    total_vocabulary = len(words_in_vocabulary.keys())
+    total_pos_words = 0
+    total_neg_words = 0
     
-    return words_in_vocabulary, words_in_pos, words_in_neg, total_vocabulary
+    for word in dict_pos:
+        total_pos_words += dict_pos.get(word)
+    print(total_pos_words)
+    
+    for word in dict_neg:
+        total_neg_words += dict_neg.get(word)
+    print(total_neg_words)
+    
+    for word in dict_pos:
+        probability = math.log(dict_pos.get(word) / total_pos_words)
+        dict_pos[word] = probability
+    #print(dict_pos)
+    
+    for word in dict_neg:
+        probability = math.log(dict_neg.get(word) / total_pos_words)
+        dict_neg[word] = probability
+    #print(dict_neg)
+    
+    
+    """
+    Probability of Positive review and Negative review
+    """
+    reviews = Counter(labels)
+    print(reviews)
+    
+    total_labels = 0
+    pos_labels = 0
+    neg_labels = 0
+    
+    for review in reviews:
+        if(review == "pos"):
+            pos_labels += reviews.get(review)
+        else:
+            neg_labels += reviews.get(review)
+        total_labels += reviews.get(review)
+    
+    print(total_labels)
+    print(pos_labels)
+    print(neg_labels)
+    
+    log_prob_pos = math.log(pos_labels / total_labels)
+    log_prob_neg = math.log(neg_labels / total_labels)
+    
+    print(log_prob_pos)
+    print(log_prob_neg)
+    
+    return dict_pos, dict_neg, log_prob_pos, log_prob_neg
        
 
 
