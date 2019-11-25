@@ -20,7 +20,10 @@ def run_main():
     Docs = The review sentences
     Labels = Sentiment (Positive or Negative)
     """
-    
+
+    """
+    Task 0 and 1
+    """
     current_dir = os.getcwd()
     the_file = current_dir + "\\all_sentiment_shuffled.txt"
     print("The file path: " + the_file)
@@ -58,14 +61,14 @@ def run_main():
     Task 2
     uncomment each test file for use as needed
     """
-    # test_file_1 = current_dir + "\\test_file_1.txt"
-    # test_doc, test_label = read_documents(test_file_1)
+    test_file_1 = current_dir + "\\test_file_1.txt"
+    test_doc, test_label = read_documents(test_file_1)
     #
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
-    #
-    test_file_3 = current_dir + "\\test_file_3.txt"
-    test_doc, test_label = read_documents(test_file_3)
+
+    # test_file_3 = current_dir + "\\test_file_3.txt"
+    # test_doc, test_label = read_documents(test_file_3)
 
     # print(test_doc)
     # print(test_label)
@@ -125,10 +128,13 @@ def train_nb(documents, labels):
     """
     word_neg = Counter()
     for doc in words_in_neg:
-        word_neg.update(doc)
+        word_neg.update(doc)                # the update function for the counter will also count the number of words inside each sentence (each index)
 
     """
     Adding words that do not appear in Positive
+    To handle all the words that did not appear in a category (pos or neg)
+    If a word appeared in pos, but not in neg, it will appear as non-existant in the neg category.
+    That is why we want to set it to 0.
     """
     dict_pos = word_pos
         
@@ -136,7 +142,8 @@ def train_nb(documents, labels):
         if word not in word_pos:
             dict_pos[word] = 0
     # print(dict_pos)
-    
+
+    # Smoothing
     for word in dict_pos:
         value = dict_pos.get(word)
         value += 0.5
@@ -185,7 +192,7 @@ def train_nb(documents, labels):
     # print(dict_pos)
 
     for word in dict_neg:
-        probability = math.log(dict_neg.get(word) / (total_pos_words + 0.5 * vocab_size))
+        probability = math.log(dict_neg.get(word) / (total_pos_words + 0.5 * vocab_size))           #?????????????????????? error????????
         dict_neg[word] = probability
     # print(dict_neg)
 
