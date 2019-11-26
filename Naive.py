@@ -103,7 +103,7 @@ def run_main():
     print_review_content = False
     list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                                 print_review_content)
-    print('\n\nHere is the list for the prediction results for the last 20% of the reviews\n')
+    print('\nHere is the list for the prediction results for the last 20% of the reviews\n')
     print(list_of_guessed_labels)
     
     # calculate the accuracy value
@@ -144,9 +144,7 @@ def train_nb(documents, labels):
     for i in range(len(documents)):
         if labels[i] == "pos":
             words_in_pos.append(documents[i])
-    
-    for i in range(len(documents)):
-        if labels[i] == "neg":
+        elif labels[i] == "neg":
             words_in_neg.append(documents[i])
             
     """
@@ -233,7 +231,7 @@ def train_nb(documents, labels):
     Probability of Positive review and Negative review
     """
     reviews = Counter(labels)
-    print('positive and negative reviews: ', end='')
+    print('positive and negative reviews (80%): ', end='')
     print(reviews)
     
     total_labels = 0
@@ -247,11 +245,11 @@ def train_nb(documents, labels):
             neg_labels += reviews.get(review)
         total_labels += reviews.get(review)
     
-    print('total positive and negative reviews: ', end='')
+    print('total positive and negative reviews (80%): ', end='')
     print(total_labels)
-    print('total positive reviews: ', end='')
+    print('total positive reviews (80%): ', end='')
     print(pos_labels)
-    print('total negative reviews: ', end='')
+    print('total negative reviews (80%): ', end='')
     print(neg_labels)
     
     log_prob_pos = math.log(pos_labels / total_labels)
@@ -285,7 +283,6 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
         print('Now scoring document: \n')
         print('Printing document:')
         print('\n', document)
-        print('\n')
 
     # match each word in the document with the probability of its occurrence from the training data
     for word in document[0]:
@@ -320,7 +317,12 @@ For task 3
 
 def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     predicted_sentiment_labels = []
-    
+
+    print("total positive reviews (20%):", end='')
+    print(len(eval_docs))
+    print("total negative reviews (20%):", end='')
+    print(len(eval_labels))
+
     for i in range(len(eval_docs)):
 
         # Return the score for pos and neg for the last 20% of the reviews in the document
