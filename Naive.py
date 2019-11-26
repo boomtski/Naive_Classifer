@@ -37,8 +37,7 @@ def run_main():
     train_labels = all_labels[:split_point]
     eval_docs = all_docs[split_point:]
     eval_labels = all_labels[split_point:]
-    
-    
+
     """
     Makes a dictionary object of how many time a word appears. The format shown below
     word : 423
@@ -47,8 +46,7 @@ def run_main():
     freqs3 = Counter(all_labels)    
     print('\ntotal number of each label (100% of data): ', end='')
     print(freqs3)
-    
-    
+
     """
     The code below works better for all_docs
     """
@@ -58,15 +56,15 @@ def run_main():
 
     dict_pos, dict_neg, log_prob_pos, log_prob_neg = train_nb(train_docs, train_labels)
     
-    #-----------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------
 
     """
     Task 2
     uncomment each test file for use as needed
     """
-    task_2 = True
-    #test_file_1 = current_dir + "\\test_file_1.txt"
-    #test_doc, test_label = read_documents(test_file_1)
+    print_review_content = True
+    # test_file_1 = current_dir + "\\test_file_1.txt"
+    # test_doc, test_label = read_documents(test_file_1)
     #
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
@@ -82,11 +80,14 @@ def run_main():
     
     print('\nTask 2:\n')
     
-    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
+    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+                                           print_review_content)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
 
     guess = classify_nb(test_doc, score_pos, score_neg)
-    
+
+    guess_output = ''
+
     if guess == 'pos':
         guess_output = 'positive review! :)'
     elif guess == 'neg':
@@ -94,13 +95,14 @@ def run_main():
     
     print('guess: ' + guess_output)
     
-    #-----------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------
     
     """
     Task 3
     """
-    task_2 = False
-    list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
+    print_review_content = False
+    list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+                                                print_review_content)
     print('\n\nHere is the list for the prediction results for the last 20% of the reviews\n')
     print(list_of_guessed_labels)
     
@@ -158,7 +160,8 @@ def train_nb(documents, labels):
     """
     word_neg = Counter()
     for doc in words_in_neg:
-        word_neg.update(doc)                # the update function for the counter will also count the number of words inside each sentence (each index)
+        word_neg.update(doc)
+    # the update function for the counter will also count the number of words inside each sentence (each index)
 
     """
     Adding words that do not appear in Positive
@@ -222,7 +225,7 @@ def train_nb(documents, labels):
     # print(dict_pos)
 
     for word in dict_neg:
-        probability = math.log(dict_neg.get(word) / (total_pos_words + 0.5 * vocab_size))           #?????????????????????? error????????
+        probability = math.log(dict_neg.get(word) / (total_neg_words + 0.5 * vocab_size))
         dict_neg[word] = probability
     # print(dict_neg)
 
@@ -273,12 +276,12 @@ don't think 'label' is needed for this function??? But it's written on the proje
 """
 
 
-def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2):
+def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
 
     score_pos = log_prob_pos
     score_neg = log_prob_neg
 
-    if task_2 == True:
+    if print_review_content is True:
         print('Now scoring document: \n')
         print('Printing document:')
         print('\n', document)
@@ -313,46 +316,47 @@ def classify_nb(document, score_pos, score_neg):
 """
 For task 3
 """
-def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2):
-    
-    list_of_predicted_sentiment_labels = []
+
+
+def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
+    predicted_sentiment_labels = []
     
     for i in range(len(eval_docs)):
-        
+
         # Return the score for pos and neg for the last 20% of the reviews in the document
-        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
+        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content)
         
         # Classify every document results one by one
         guess = classify_nb(eval_docs, score_pos_test, score_neg_test)
         
         # Store every guess result inside a list in order of review
-        list_of_predicted_sentiment_labels.append(guess)
+        predicted_sentiment_labels.append(guess)
     
-    return list_of_predicted_sentiment_labels
-    
+    return predicted_sentiment_labels
 
 
-def accuracy(true_labels, guessed_labels, eval_docs):
+def accuracy(eval_labels, predicted_sentiment_labels, eval_docs):
     
     correctly_classified_counter = 0
-    total_number_of_test_doc = len(true_labels)
+    total_number_of_test_doc = len(eval_labels)
     misclassified_list = []
     
-    #print('\nThe true labels:\n')
-    #print(true_labels)
-    
+    # print('\nThe true labels:\n')
+    # print(true_labels)
+
     for label in range(total_number_of_test_doc):
-        if true_labels[label] == guessed_labels[label]:
+        if eval_labels[label] == predicted_sentiment_labels[label]:
             correctly_classified_counter += 1
         else:
             # Store all few misclassified documents in a list
             misclassified_list.append(eval_docs[label])
     
-    print('\nMisclassified Documents:\n')
-    print(misclassified_list)
-    accuracy = correctly_classified_counter / total_number_of_test_doc
+    # print('\nMisclassified Documents:\n')
+    # print(misclassified_list)
+
+    final_accuracy = correctly_classified_counter / total_number_of_test_doc
     
-    return accuracy
+    return final_accuracy
 
 
 run_main()
