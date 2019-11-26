@@ -273,11 +273,6 @@ def train_nb(documents, labels):
     return dict_pos, dict_neg, log_prob_pos, log_prob_neg
 
 
-"""
-don't think 'label' is needed for this function??? But it's written on the project description
-"""
-
-
 def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
 
     score_pos = log_prob_pos
@@ -298,11 +293,6 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
             score_neg += dict_neg.get(word)
 
     return score_pos, score_neg
-
-
-"""
-didn't have to use the 'document' parameter here... am I doing something wrong???
-"""
 
 
 def classify_nb(document, score_pos, score_neg):
