@@ -79,7 +79,8 @@ def run_main():
     # print(test_label)
     
     print('\nTask 2:\n')
-    
+
+    print('Scoring test document:')
     score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                            print_review_content)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
@@ -100,10 +101,13 @@ def run_main():
     """
     Task 3
     """
+    print("\nTask 3:")
+    print("\nNow starting classification:")
+
     print_review_content = False
     list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                                 print_review_content)
-    print('\nHere is the list for the prediction results for the last 20% of the reviews\n')
+    print('\nHere is the list for the prediction results for the last 20% of the reviews')
     print(list_of_guessed_labels)
     
     # calculate the accuracy value
