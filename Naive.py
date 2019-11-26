@@ -12,6 +12,7 @@ from codecs import open
 
 
 def run_main():
+    print('\nTask 0 and 1:\n')
     print("Naive-Bayes Classifier")
     
     """
@@ -26,7 +27,7 @@ def run_main():
     """
     current_dir = os.getcwd()
     the_file = current_dir + "\\all_sentiment_shuffled.txt"
-    print("The file path: " + the_file)
+    print("\nThe file path: " + the_file)
 
     all_docs, all_labels = read_documents(the_file)
     # print(all_docs)
@@ -44,7 +45,7 @@ def run_main():
     The code shown below works better for all_labels
     """
     freqs3 = Counter(all_labels)    
-    print('total number of each label (100% of data): ', end='')
+    print('\ntotal number of each label (100% of data): ', end='')
     print(freqs3)
     
     
@@ -56,29 +57,58 @@ def run_main():
         freqs2.update(doc)
 
     dict_pos, dict_neg, log_prob_pos, log_prob_neg = train_nb(train_docs, train_labels)
+    
+    #-----------------------------------------------------------------------------------------------------
 
     """
     Task 2
     uncomment each test file for use as needed
     """
-    test_file_1 = current_dir + "\\test_file_1.txt"
-    test_doc, test_label = read_documents(test_file_1)
+    task_2 = True
+    #test_file_1 = current_dir + "\\test_file_1.txt"
+    #test_doc, test_label = read_documents(test_file_1)
     #
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
 
     # test_file_3 = current_dir + "\\test_file_3.txt"
     # test_doc, test_label = read_documents(test_file_3)
+    
+    test_file_task_4 = current_dir + "\\test_file_3.txt"
+    test_doc, test_label = read_documents(test_file_task_4)
 
     # print(test_doc)
     # print(test_label)
-
-    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg)
+    
+    print('\nTask 2:\n')
+    
+    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
 
     guess = classify_nb(test_doc, score_pos, score_neg)
-    print('guess: ' + guess)
-
+    
+    if guess == 'pos':
+        guess_output = 'positive review! :)'
+    elif guess == 'neg':
+        guess_output = 'negative review! :('
+    
+    print('guess: ' + guess_output)
+    
+    #-----------------------------------------------------------------------------------------------------
+    
+    """
+    Task 3
+    """
+    task_2 = False
+    list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
+    print('\n\nHere is the list for the prediction results for the last 20% of the reviews\n')
+    print(list_of_guessed_labels)
+    
+    # calculate the accuracy value
+    accuracy_value = accuracy(eval_labels, list_of_guessed_labels, eval_docs)
+    print('\nThe accuracy of the program is: ', end='')
+    print(accuracy_value)
+    
 
 """
 Reading the document.
@@ -243,14 +273,16 @@ don't think 'label' is needed for this function??? But it's written on the proje
 """
 
 
-def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg):
-    print('\nnow scoring document: \n')
+def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2):
 
     score_pos = log_prob_pos
     score_neg = log_prob_neg
 
-    print('printing document:')
-    print(document)
+    if task_2 == True:
+        print('Now scoring document: \n')
+        print('Printing document:')
+        print('\n', document)
+        print('\n')
 
     # match each word in the document with the probability of its occurrence from the training data
     for word in document[0]:
@@ -265,17 +297,86 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
 
 
 """
-did't have to use the 'document' parameter here... am I doing something wrong???
+didn't have to use the 'document' parameter here... am I doing something wrong???
 """
 
 
 def classify_nb(document, score_pos, score_neg):
     if score_pos > score_neg:
-        guess = 'positive review! :)'
+        guess = 'pos'
     else:
-        guess = 'negative review! :('
+        guess = 'neg'
 
     return guess
 
 
+"""
+For task 3
+"""
+def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2):
+    
+    list_of_predicted_sentiment_labels = []
+    
+    for i in range(len(eval_docs)):
+        
+        # Return the score for pos and neg for the last 20% of the reviews in the document
+        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg, task_2)
+        
+        # Classify every document results one by one
+        guess = classify_nb(eval_docs, score_pos_test, score_neg_test)
+        
+        # Store every guess result inside a list in order of review
+        list_of_predicted_sentiment_labels.append(guess)
+    
+    return list_of_predicted_sentiment_labels
+    
+
+
+def accuracy(true_labels, guessed_labels, eval_docs):
+    
+    correctly_classified_counter = 0
+    total_number_of_test_doc = len(true_labels)
+    misclassified_list = []
+    
+    #print('\nThe true labels:\n')
+    #print(true_labels)
+    
+    for label in range(total_number_of_test_doc):
+        if true_labels[label] == guessed_labels[label]:
+            correctly_classified_counter += 1
+        else:
+            # Store all few misclassified documents in a list
+            misclassified_list.append(eval_docs[label])
+    
+    print('\nMisclassified Documents:\n')
+    print(misclassified_list)
+    accuracy = correctly_classified_counter / total_number_of_test_doc
+    
+    return accuracy
+
+
 run_main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
