@@ -337,17 +337,17 @@ def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos,
     return predicted_sentiment_labels
 
 
-def accuracy(eval_labels, predicted_sentiment_labels, eval_docs):
+def accuracy(true_labels, predicted_sentiment_labels, eval_docs):
     
     correctly_classified_counter = 0
-    total_number_of_test_doc = len(eval_labels)
+    total_number_of_test_doc = len(true_labels)
     misclassified_list = []
     
     # print('\nThe true labels:\n')
     # print(true_labels)
 
     for label in range(total_number_of_test_doc):
-        if eval_labels[label] == predicted_sentiment_labels[label]:
+        if true_labels[label] == predicted_sentiment_labels[label]:
             correctly_classified_counter += 1
         else:
             # Store all few misclassified documents in a list
