@@ -318,10 +318,8 @@ For task 3
 def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     predicted_sentiment_labels = []
 
-    print("total positive reviews (20%): ", end='')
+    print("total reviews to classify (20%): ", end='')
     print(len(eval_docs))
-    print("total negative reviews (20%): ", end='')
-    print(len(eval_labels))
 
     for i in range(len(eval_docs)):
 
