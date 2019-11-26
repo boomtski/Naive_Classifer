@@ -282,7 +282,7 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
     if print_review_content is True:
         print('Now scoring document: \n')
         print('Printing document:')
-        print('\n', document)
+        print(document)
 
     # match each word in the document with the probability of its occurrence from the training data
     for word in document[0]:
@@ -318,9 +318,9 @@ For task 3
 def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     predicted_sentiment_labels = []
 
-    print("total positive reviews (20%):", end='')
+    print("total positive reviews (20%): ", end='')
     print(len(eval_docs))
-    print("total negative reviews (20%):", end='')
+    print("total negative reviews (20%): ", end='')
     print(len(eval_labels))
 
     for i in range(len(eval_docs)):
