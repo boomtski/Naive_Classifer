@@ -12,9 +12,10 @@ from codecs import open
 
 
 def run_main():
-    print('\nTask 0 and 1:\n')
     print("Naive-Bayes Classifier")
-    
+
+    print('\nTask 0 and 1:')
+
     """
     Remove the document identifier and use 80% of whole doc for training.
     Remaining 20% would be for testing.
@@ -60,28 +61,39 @@ def run_main():
 
     """
     Task 2
-    uncomment each test file for use as needed
+    uncomment each test file for testing as needed
     """
     print_review_content = True
-    # test_file_1 = current_dir + "\\test_file_1.txt"
-    # test_doc, test_label = read_documents(test_file_1)
-    #
+    test_file_1 = current_dir + "\\test_file_1.txt"
+    test_doc, test_label = read_documents(test_file_1)
+
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
 
     # test_file_3 = current_dir + "\\test_file_3.txt"
     # test_doc, test_label = read_documents(test_file_3)
-    
-    test_file_task_4 = current_dir + "\\test_file_3.txt"
-    test_doc, test_label = read_documents(test_file_task_4)
 
-    # print(test_doc)
-    # print(test_label)
-    
+    # test_file_4 = current_dir + "\\test_file_4.txt"
+    # test_doc, test_label = read_documents(test_file_4)
+
+    # test_file_5 = current_dir + "\\test_file_5.txt"
+    # test_doc, test_label = read_documents(test_file_5)
+
+    # test_file_6 = current_dir + "\\test_file_6.txt"
+    # test_doc, test_label = read_documents(test_file_6)
+
+    # test_file_7 = current_dir + "\\test_file_7.txt"
+    # test_doc, test_label = read_documents(test_file_7)
+
+    # test_file_8 = current_dir + "\\test_file_8.txt"
+    # test_doc, test_label = read_documents(test_file_8)
+
+    # test_file_task_4 = current_dir + "\\test_file_task_4.txt"
+    # test_doc, test_label = read_documents(test_file_task_4)
+
     print('\nTask 2:\n')
 
-    print('Scoring test document:')
-    score_pos, score_neg = score_doc_label(test_doc, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                            print_review_content)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
 
@@ -95,17 +107,17 @@ def run_main():
         guess_output = 'negative review! :('
     
     print('guess: ' + guess_output)
-    
+
     # -----------------------------------------------------------------------------------------------------
     
     """
     Task 3
     """
     print("\nTask 3:")
-    print("\nNow starting classification:")
+    print("\nNow starting classification: \n")
 
     print_review_content = False
-    list_of_guessed_labels = classify_documents(eval_docs, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+    list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                                 print_review_content)
     print('\nHere is the list for the prediction results for the last 20% of the reviews')
     print(list_of_guessed_labels)
@@ -133,7 +145,6 @@ def read_documents(doc_file):
 
 
 def train_nb(documents, labels):
-
     smoothing = 0.5
     words_in_vocabulary = Counter()
     words_in_pos = []                   
@@ -274,15 +285,15 @@ def train_nb(documents, labels):
     return dict_pos, dict_neg, log_prob_pos, log_prob_neg
 
 
-def score_doc_label(document, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
-
+def score_doc_label(document, expected_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     score_pos = log_prob_pos
     score_neg = log_prob_neg
 
     if print_review_content is True:
         print('Now scoring document: \n')
-        print('Printing document:')
-        print(document)
+        print('Document: ', end='')
+        print(document[0])
+        print('Expected label: ' + expected_label[0] + '\n')
 
     # match each word in the document with the probability of its occurrence from the training data
     for word in document[0]:
@@ -310,17 +321,16 @@ For task 3
 """
 
 
-def classify_documents(eval_docs, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
+def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     predicted_sentiment_labels = []
 
     print("total reviews to classify (20%): ", end='')
     print(len(eval_docs))
 
     for i in range(len(eval_docs)):
-
         # Return the score for pos and neg for the last 20% of the reviews in the document
-        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg,
-                                                         print_review_content)
+        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels, dict_pos, dict_neg, log_prob_pos,
+                                                         log_prob_neg, print_review_content)
         
         # Classify every document results one by one
         guess = classify_nb(score_pos_test, score_neg_test)
@@ -332,15 +342,14 @@ def classify_documents(eval_docs, dict_pos, dict_neg, log_prob_pos, log_prob_neg
 
 
 def accuracy(true_labels, guessed_labels, eval_docs):
-    
     correctly_classified_counter = 0
-    total_number_of_test_doc = len(true_labels)
+    total_number_of_test_docs = len(true_labels)
     misclassified_list = []
     
     # print('\nThe true labels:\n')
     # print(true_labels)
 
-    for label in range(total_number_of_test_doc):
+    for label in range(total_number_of_test_docs):
         if true_labels[label] == guessed_labels[label]:
             correctly_classified_counter += 1
         else:
@@ -350,7 +359,7 @@ def accuracy(true_labels, guessed_labels, eval_docs):
     # print('\nMisclassified Documents:\n')
     # print(misclassified_list)
 
-    final_accuracy = correctly_classified_counter / total_number_of_test_doc
+    final_accuracy = correctly_classified_counter / total_number_of_test_docs
     
     return final_accuracy
 
