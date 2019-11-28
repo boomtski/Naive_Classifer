@@ -81,11 +81,11 @@ def run_main():
     print('\nTask 2:\n')
 
     print('Scoring test document:')
-    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+    score_pos, score_neg = score_doc_label(test_doc, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                            print_review_content)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
 
-    guess = classify_nb(test_doc, score_pos, score_neg)
+    guess = classify_nb(score_pos, score_neg)
 
     guess_output = ''
 
@@ -105,7 +105,7 @@ def run_main():
     print("\nNow starting classification:")
 
     print_review_content = False
-    list_of_guessed_labels = classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+    list_of_guessed_labels = classify_documents(eval_docs, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                                 print_review_content)
     print('\nHere is the list for the prediction results for the last 20% of the reviews')
     print(list_of_guessed_labels)
@@ -133,7 +133,8 @@ def read_documents(doc_file):
 
 
 def train_nb(documents, labels):
-    
+
+    smoothing = 0.5
     words_in_vocabulary = Counter()
     words_in_pos = []                   
     words_in_neg = []                  
@@ -181,7 +182,7 @@ def train_nb(documents, labels):
     # Smoothing
     for word in dict_pos:
         value = dict_pos.get(word)
-        value += 0.5
+        value += smoothing
         dict_pos[word] = value
     # print(dict_pos)
 
@@ -197,7 +198,7 @@ def train_nb(documents, labels):
     
     for word in dict_neg:
         value = dict_neg.get(word)
-        value += 0.5
+        value += smoothing
         dict_neg[word] = value
     # print(dict_neg)
     
@@ -222,12 +223,12 @@ def train_nb(documents, labels):
     print(vocab_size)
     
     for word in dict_pos:
-        probability = math.log(dict_pos.get(word) / (total_pos_words + 0.5 * vocab_size))
+        probability = math.log(dict_pos.get(word) / (total_pos_words + smoothing * vocab_size))
         dict_pos[word] = probability
     # print(dict_pos)
 
     for word in dict_neg:
-        probability = math.log(dict_neg.get(word) / (total_neg_words + 0.5 * vocab_size))
+        probability = math.log(dict_neg.get(word) / (total_neg_words + smoothing * vocab_size))
         dict_neg[word] = probability
     # print(dict_neg)
 
@@ -273,7 +274,7 @@ def train_nb(documents, labels):
     return dict_pos, dict_neg, log_prob_pos, log_prob_neg
 
 
-def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
+def score_doc_label(document, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
 
     score_pos = log_prob_pos
     score_neg = log_prob_neg
@@ -295,7 +296,7 @@ def score_doc_label(document, label, dict_pos, dict_neg, log_prob_pos, log_prob_
     return score_pos, score_neg
 
 
-def classify_nb(document, score_pos, score_neg):
+def classify_nb(score_pos, score_neg):
     if score_pos > score_neg:
         guess = 'pos'
     else:
@@ -309,7 +310,7 @@ For task 3
 """
 
 
-def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
+def classify_documents(eval_docs, dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content):
     predicted_sentiment_labels = []
 
     print("total reviews to classify (20%): ", end='')
@@ -318,10 +319,11 @@ def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos,
     for i in range(len(eval_docs)):
 
         # Return the score for pos and neg for the last 20% of the reviews in the document
-        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg, print_review_content)
+        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+                                                         print_review_content)
         
         # Classify every document results one by one
-        guess = classify_nb(eval_docs, score_pos_test, score_neg_test)
+        guess = classify_nb(score_pos_test, score_neg_test)
         
         # Store every guess result inside a list in order of review
         predicted_sentiment_labels.append(guess)
@@ -329,7 +331,7 @@ def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos,
     return predicted_sentiment_labels
 
 
-def accuracy(true_labels, predicted_sentiment_labels, eval_docs):
+def accuracy(true_labels, guessed_labels, eval_docs):
     
     correctly_classified_counter = 0
     total_number_of_test_doc = len(true_labels)
@@ -339,7 +341,7 @@ def accuracy(true_labels, predicted_sentiment_labels, eval_docs):
     # print(true_labels)
 
     for label in range(total_number_of_test_doc):
-        if true_labels[label] == predicted_sentiment_labels[label]:
+        if true_labels[label] == guessed_labels[label]:
             correctly_classified_counter += 1
         else:
             # Store all few misclassified documents in a list
