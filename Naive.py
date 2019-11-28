@@ -64,8 +64,12 @@ def run_main():
     uncomment each test file for testing as needed
     """
     print_review_content = True
-    test_file_1 = current_dir + "\\test_file_1.txt"
-    test_doc, test_label = read_documents(test_file_1)
+
+    #test_file_1 = current_dir + "\\test_file_1.txt"
+    #test_doc, test_label = read_documents(test_file_1)
+
+    test_file_miss = current_dir + "\\Misclassified_document_number_1164.txt"
+    test_doc, test_label = read_documents(test_file_miss)
 
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
@@ -90,12 +94,11 @@ def run_main():
 
     # test_file_task_4 = current_dir + "\\test_file_task_4.txt"
     # test_doc, test_label = read_documents(test_file_task_4)
-
     print('\nTask 2:\n')
 
     score_pos, score_neg = score_doc_label(test_doc[0], test_label[0], dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                            print_review_content)
-    print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
+    print('scores: pos: ' + str(score_pos) + ' and neg: ' + str(score_neg))
 
     guess = classify_nb(score_pos, score_neg)
 
@@ -292,8 +295,8 @@ def score_doc_label(document, expected_label, dict_pos, dict_neg, log_prob_pos, 
     if print_review_content is True:
         print('Now scoring document: \n')
         print('Document: ', end='')
-        print(document[0])
-        print('Expected label: ' + expected_label[0] + '\n')
+        print(document)
+        print('Expected label: ' + expected_label + '\n')
 
     # match each word in the document with the probability of its occurrence from the training data
     for i in document:
@@ -333,13 +336,13 @@ def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos,
         # Return the score for pos and neg for the last 20% of the reviews in the document
         score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos,
                                                          log_prob_neg, print_review_content)
-        
+
         # Classify every document results one by one
         guess = classify_nb(score_pos_test, score_neg_test)
         
         # Store every guess result inside a list in order of review
         predicted_sentiment_labels.append(guess)
-    
+
     return predicted_sentiment_labels
 
 
