@@ -93,7 +93,7 @@ def run_main():
 
     print('\nTask 2:\n')
 
-    score_pos, score_neg = score_doc_label(test_doc, test_label, dict_pos, dict_neg, log_prob_pos, log_prob_neg,
+    score_pos, score_neg = score_doc_label(test_doc[0], test_label[0], dict_pos, dict_neg, log_prob_pos, log_prob_neg,
                                            print_review_content)
     print('scores: ' + str(score_pos) + ', and ' + str(score_neg))
 
@@ -296,11 +296,13 @@ def score_doc_label(document, expected_label, dict_pos, dict_neg, log_prob_pos, 
         print('Expected label: ' + expected_label[0] + '\n')
 
     # match each word in the document with the probability of its occurrence from the training data
-    for word in document[0]:
+    for i in document:
+        word = i
         if word in dict_pos:
             score_pos += dict_pos.get(word)
 
-    for word in document[0]:
+    for i in document:
+        word = i
         if word in dict_neg:
             score_neg += dict_neg.get(word)
 
@@ -329,7 +331,7 @@ def classify_documents(eval_docs, eval_labels, dict_pos, dict_neg, log_prob_pos,
 
     for i in range(len(eval_docs)):
         # Return the score for pos and neg for the last 20% of the reviews in the document
-        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels, dict_pos, dict_neg, log_prob_pos,
+        score_pos_test, score_neg_test = score_doc_label(eval_docs[i], eval_labels[i], dict_pos, dict_neg, log_prob_pos,
                                                          log_prob_neg, print_review_content)
         
         # Classify every document results one by one
