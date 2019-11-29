@@ -65,11 +65,8 @@ def run_main():
     """
     print_review_content = True
 
-    #test_file_1 = current_dir + "\\test_file_1.txt"
-    #test_doc, test_label = read_documents(test_file_1)
-
-    test_file_miss = current_dir + "\\Misclassified_document_number_1164.txt"
-    test_doc, test_label = read_documents(test_file_miss)
+    test_file_1 = current_dir + "\\test_file_1.txt"
+    test_doc, test_label = read_documents(test_file_1)
 
     # test_file_2 = current_dir + "\\test_file_2.txt"
     # test_doc, test_label = read_documents(test_file_2)
@@ -92,8 +89,6 @@ def run_main():
     # test_file_8 = current_dir + "\\test_file_8.txt"
     # test_doc, test_label = read_documents(test_file_8)
 
-    # test_file_task_4 = current_dir + "\\test_file_task_4.txt"
-    # test_doc, test_label = read_documents(test_file_task_4)
     print('\nTask 2:\n')
 
     score_pos, score_neg = score_doc_label(test_doc[0], test_label[0], dict_pos, dict_neg, log_prob_pos, log_prob_neg,
